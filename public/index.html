@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uploaded Photos</title>
+<style>
+  /* CSS styles for the page */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    }
+    
+    body {
+    font-family: -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu,
+        Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    background: #fafafa;
+    }
+    .deleteButton {
+    background-color: #ff6347;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+    
+    .navbar {
+    position: fixed;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgb(255, 255, 255);
+    width: 100%;
+    border: 1px solid rgb(218, 217, 217);
+    }
+    
+    .navbar .container {
+    /* background-color: #555; */
+    padding: 15px 0;
+    width: 75%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* margin: 0 auto; */
+    }
+    
+    .container .logo {
+    display: inline-block;
+    cursor: pointer;
+    }
+    
+    .searchbar {
+    width: -10%;
+    text-align: end;
+    }
+    
+    .searchbar input {
+    background-color: #fafafa;
+    padding: 5px;
+    text-indent: 21px;
+    outline: none;
+    border: 1px solid rgb(218, 217, 217);
+    border-radius: 2px;
+    color: rgb(77, 77, 77);
+    }
+    
+    .searchbar img {
+    position: absolute;
+    margin-left: -10.5rem;
+    margin-top: 0.25rem;
+    }
+    
+    .searchbar input::placeholder {
+    font-weight: lighter;
+    color: rgb(172, 172, 172);
+    }
+    
+    .nav-links {
+    font-weight: lighter;
+    color: rgb(172, 172, 172);
+    /* background: #333 ; */
+    }
+    
+    .nav-group .nav-item {
+    list-style-type: none;
+    margin: 0 8px;
+    }
+    
+    .nav-group .nav-item a {
+    font-size: 22px;
+    display: block;
+    color: black;
+    }
+    
+    .nav-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+    .nav-group .nav-item a {
+    font-size: 22px;
+    display: block;
+    color: black;
+    }
+    
+    .nav-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+    
+    .action .profile {
+    position: relative;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+    
+    .action .profile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    }
+    
+    main {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+    
+    main .container {
+    position: relative;
+    margin-top: 60px;
+    width: 75%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    /* background: #ddd; */
+    }
+    
+    .col-9 {
+    width: 65%;
+    margin-top: 30px;
+    }
+    
+    .statuses {
+    margin-bottom: 30px;
+    width: 100%;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    padding: 20px 0;
+    border-radius: 2px;
+    border: 1px solid rgb(218, 217, 217);
+    overflow: auto;
+    }
+    
+    .statuses .status {
+    display: inline-block;
+    border-radius: 50%;
+    overflow: auto;
+    width: 70px;
+    height: 70px;
+    min-width: 70px;
+    min-height: 70px;
+    background: linear-gradient(to right, red, orange);
+    padding: 2px;
+    margin-left: 15px;
+    cursor: pointer;
+    }
+    
+    .statuses .status .image {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+    }
+    
+    .statuses .status img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    }
+    
+    .col-3 {
+    width: 33%;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 90px;
+    }
+    
+    .col-3 h4 {
+    color: rgb(100, 100, 100);
+    }
+    
+    .col-3 .card {
+    margin-bottom: 20px;
+    position: relative;
+    width: 100%;
+    /* min-height: 400px; */
+    display: inline-block;
+    }
+    
+    .col-3 .card .top {
+    padding: 10px 0px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    }
+    
+    .col-3 .card .top a {
+    color: #1d92ff;
+    }
+    
+    .col-3 .card .bottom {
+    padding: 10px 20px;
+    }
+    
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+  }
+  #imageContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 20px;
+  }
+  .uploadedImage {
+    margin: 10px;
+    border: 1px solid #ccc;
+    padding: 5px;
+    width: 200px;
+    text-align: center;
+  }
+  .uploadedImage img {
+    max-width: 100%;
+    max-height: 150px;
+  }
+  #uploadInput {
+    display: none; /* Hide by default */
+  }
+  #uploadLabel {
+    display: block;
+    width: 200px;
+    margin: 20px auto;
+    text-align: center;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <header>
+		<nav class="navbar">
+			<div class="container">
+				<div class="logo">
+					<a href="#">
+					<img src=
+"https://media.geeksforgeeks.org/wp-content/uploads/20220609090809/download-200x200.png"
+						alt="img1" height="30px">
+					</a>
+				</div>
+				<div class="searchbar">
+					<input type="text"
+						placeholder="Search">
+					<img src=
+"https://media.geeksforgeeks.org/wp-content/uploads/20220609093658/search-200x200.png"
+						height="18"
+						alt="img2">
+				</div>
+				<div class="nav-links">
+					<ul class="nav-group">
+						<li class="nav-item">
+							<a href="#">
+								<i class="fas fa-home"></i>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a href="">
+								<i class="fab fa-facebook-messenger"></i>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a href="">
+								<i class="far fa-compass"></i>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a href="">
+								<i class="far fa-heart"></i>
+							</a>
+						</li>
+						<li class="nav-item">
+							<div class="action">
+								<div class="profile"
+									onclick="menuToggle()">
+									<img src=
+"https://media.geeksforgeeks.org/wp-content/uploads/20220609093221/g2-200x200.jpg"
+										alt="user Avatar">
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</header>
+
+	<!-- Code for Showing the Status -->
+	<main>
+		<div class="container">
+			<div class="col-9">
+				<div class="statuses">
+					<div class="status">
+						<div class="image">
+							<img src=
+"https://media.geeksforgeeks.org/wp-content/uploads/20220604085434/GeeksForGeeks-300x243.png"
+								alt="img3">
+						</div>
+					</div>
+					<div class="status">
+						<div class="image">
+							<img src=
+"https://media.geeksforgeeks.org/wp-content/uploads/20220609093221/g2-200x200.jpg"
+								alt="img4">
+						</div>
+					</div>
+					<div class="status">
+						<div class="image">
+							<img src=
+"https://media.geeksforgeeks.org/wp-content/uploads/20220609093241/g3-200x200.png"
+								alt="img5">
+						</div>
+					</div>
+					<div class="status">
+						<div class="image">
+							<img src=
+"https://media.geeksforgeeks.org/wp-content/uploads/20220609093229/g-200x200.png"
+								alt="img6">
+						</div>
+					</div>
+					<div class="status">
+						<div class="image">
+							<img src=
+"https://media.geeksforgeeks.org/wp-content/uploads/20220609093221/g2-200x200.jpg"
+								alt="img7">
+						</div>
+					</div>
+					<div class="status">
+						<div class="image">
+							<img src=
+"https://media.geeksforgeeks.org/wp-content/uploads/20220604085434/GeeksForGeeks-300x243.png"
+								alt="img8">
+						</div>
+					</div>
+				</div>
+<!-- Container for uploaded photos -->
+<div id="imageContainer"></div>
+
+<!-- Upload button and input -->
+<label id="uploadLabel" for="uploadInput">Upload Photo</label>
+<input id="uploadInput" type="file" accept="image/*" onchange="uploadPhoto(event)">
+
+<!-- JavaScript to fetch and display uploaded photos -->
+<script>
+  // Function to fetch and display uploaded photos
+  async function fetchAndDisplayPhotos() {
+    try {
+      const response = await fetch('/posts');
+      const posts = await response.json();
+      
+      const imageContainer = document.getElementById('imageContainer');
+      imageContainer.innerHTML = ''; // Clear previous content
+      
+      posts.forEach(post => {
+        const imageUrl = post.imageUrl;
+        const imageElement = document.createElement('div');
+        imageElement.className = 'uploadedImage';
+        
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.alt = 'Uploaded Photo';
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.className = 'deleteButton';
+        deleteButton.addEventListener('click', () => deletePhoto(post._id)); // Attach click event
+        
+        imageElement.appendChild(img);
+        imageElement.appendChild(deleteButton);
+        imageContainer.appendChild(imageElement);
+      });
+    } catch (error) {
+      console.error('Error fetching photos:', error);
+    }
+  }
+
+  // Function to upload photo
+  async function uploadPhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('photo', file);
+
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      if (response.ok) {
+        console.log('Photo uploaded successfully');
+        fetchAndDisplayPhotos(); // Refresh photos after upload
+      } else {
+        console.error('Failed to upload photo:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+    }
+  }
+
+  //Function to delete photo
+  async function deletePhoto(postId) {
+    try {
+      const response = await fetch(`/posts/${postId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        console.log('Photo deleted successfully');
+        fetchAndDisplayPhotos(); // Refresh photos after deletion
+      } else {
+        console.error('Failed to delete photo:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error deleting photo:', error);
+    }
+  }
+
+  // Call the function when the page loads
+  window.onload = fetchAndDisplayPhotos;
+</script>
+</body>
+</html>
