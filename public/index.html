@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<!-- Add this line to include Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Uploaded Photos</title>
@@ -247,17 +250,19 @@
     justify-content: center;
     align-items: flex-start;
     margin-top: 20px;
+
   }
   .uploadedImage {
     margin: 10px;
     border: 1px solid #ccc;
     padding: 5px;
-    width: 200px;
+    width: 1000px;
+	height:1000px;
     text-align: center;
   }
   .uploadedImage img {
     max-width: 100%;
-    max-height: 150px;
+    max-height: 800px;
   }
   #uploadInput {
     display: none; /* Hide by default */
@@ -391,33 +396,56 @@
   // Function to fetch and display uploaded photos
   async function fetchAndDisplayPhotos() {
     try {
-      const response = await fetch('/posts');
-      const posts = await response.json();
-      
-      const imageContainer = document.getElementById('imageContainer');
-      imageContainer.innerHTML = ''; // Clear previous content
-      
-      posts.forEach(post => {
-        const imageUrl = post.imageUrl;
-        const imageElement = document.createElement('div');
-        imageElement.className = 'uploadedImage';
-        
-        const img = document.createElement('img');
-        img.src = imageUrl;
-        img.alt = 'Uploaded Photo';
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete';
-        deleteButton.className = 'deleteButton';
-        deleteButton.addEventListener('click', () => deletePhoto(post._id)); // Attach click event
-        
-        imageElement.appendChild(img);
-        imageElement.appendChild(deleteButton);
-        imageContainer.appendChild(imageElement);
-      });
+        const response = await fetch('/posts');
+        const posts = await response.json();
+
+        const imageContainer = document.getElementById('imageContainer');
+        imageContainer.innerHTML = ''; // Clear previous content
+
+        posts.forEach(post => {
+            const imageUrl = post.imageUrl;
+            const imageElement = document.createElement('div');
+            imageElement.className = 'uploadedImage';
+
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = 'Uploaded Photo';
+
+            // Set image dimensions to fill the viewport
+            img.style.width = '100vw';
+            img.style.height = '100vh';
+            img.style.objectFit = 'cover';
+
+            // Like button with heart icon
+            const likeButton = document.createElement('button');
+            likeButton.innerHTML = '<i class="fas fa-heart"></i>'; // Heart icon
+            likeButton.className = 'likeButton';
+            likeButton.addEventListener('click', () => likePost(post._id)); // Attach click event
+
+            // Comment section
+            const commentSection = document.createElement('div');
+            commentSection.className = 'commentSection';
+            commentSection.innerHTML = `
+                <textarea id="commentInput-${post._id}" placeholder="Add a comment"></textarea>
+                <button onclick="addComment('${post._id}')">Add Comment</button>
+            `;
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.className = 'deleteButton';
+            deleteButton.addEventListener('click', () => deletePhoto(post._id)); // Attach click event
+
+            imageElement.appendChild(img);
+            imageElement.appendChild(likeButton);
+            imageElement.appendChild(commentSection);
+            imageElement.appendChild(deleteButton);
+            imageContainer.appendChild(imageElement);
+        });
     } catch (error) {
-      console.error('Error fetching photos:', error);
+        console.error('Error fetching photos:', error);
     }
-  }
+}
+
 
   // Function to upload photo
   async function uploadPhoto(event) {
@@ -444,21 +472,74 @@
   }
 
   //Function to delete photo
-  async function deletePhoto(postId) {
+  // Modify the deletePhoto function to send a request to delete the image
+  async function deletePhotoContainer(postId) {
+            try {
+                const response = await fetch(`/posts/photo/${postId}`, {
+                    method: 'DELETE',
+                });
+                if (response.ok) {
+                    const imageContainer = document.getElementById('imageContainer');
+                    imageContainer.remove(); // Remove the entire image container
+                    console.log('Image container deleted successfully');
+                } else {
+                    console.error('Failed to delete image container:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error deleting image container:', error);
+            }
+        }
+
+		// Update likePost function to send a request to like the post
+// Update likePost function to send a request to like the post
+async function likePost(postId) {
     try {
-      const response = await fetch(`/posts/${postId}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        console.log('Photo deleted successfully');
-        fetchAndDisplayPhotos(); // Refresh photos after deletion
-      } else {
-        console.error('Failed to delete photo:', response.statusText);
-      }
+        const response = await fetch(`/posts/${postId}/like`, { // Corrected route
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            // You can pass any additional data in the request body if needed
+            body: JSON.stringify({ postId: postId }),
+        });
+        if (response.ok) {
+            console.log('Post liked successfully');
+            fetchAndDisplayPhotos(); // Refresh photos after liking
+        } else {
+            console.error('Failed to like post:', response.statusText);
+        }
     } catch (error) {
-      console.error('Error deleting photo:', error);
+        console.error('Error liking post:', error);
     }
-  }
+}
+
+// Function to add a comment to a post
+async function addComment(postId) {
+    const commentInput = document.getElementById(`commentInput-${postId}`).value;
+    if (!commentInput) return;
+
+    try {
+        const response = await fetch(`/posts/${postId}/comment`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ comment: commentInput }),
+        });
+        if (response.ok) {
+            console.log('Comment added successfully');
+            fetchAndDisplayPhotos(); // Refresh photos after adding comment
+        } else {
+            console.error('Failed to add comment:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error adding comment:', error);
+    }
+}
+
+
+ 
+
 
   // Call the function when the page loads
   window.onload = fetchAndDisplayPhotos;

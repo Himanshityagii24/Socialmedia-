@@ -99,55 +99,54 @@ app.put('/posts/:id', getPost, async (req, res) => {
 });
 
 
-app.delete('/posts/photo/:id', async (req, res) => {
+// Update the route to delete the photo by post id
+
+  app.delete('/posts/photo/:id', async (req, res) => {
     try {
-      const post = await Post.findById(req.params.id);
-      if (!post) {
-        return res.status(404).json({ message: 'Photo not found' });
-      }
-      // Remove the photo file from the uploads directory (if required)
-      // For simplicity, assuming the file is stored directly in the uploads directory
-      const imagePath = path.join(__dirname, 'public', post.imageUrl);
-      fs.unlinkSync(imagePath);
-      // Remove the photo record from the database
-      await post.remove();
-      res.json({ message: 'Photo deleted' });
+        const post = await Post.findById(req.params.id);
+        if (!post) {
+            return res.status(404).json({ message: 'Photo not found' });
+        }
+        // Remove the photo record from the database
+        await post.remove();
+        res.json({ message: 'Photo and container deleted' });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+        res.status(500).json({ message: err.message });
+    }
+});
+
+  
+  // Update the existing delete route for posts to delete the entire post
+  
+
+// Like a Post
+// Like a Post
+app.post('/posts/:id/like', getPost, async (req, res) => {
+    res.post.likes++;
+    try {
+      const updatedPost = await res.post.save();
+      res.json(updatedPost);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
     }
   });
   
-  // Update the existing delete route for posts to delete the entire post
-  app.delete('/posts/:id', getPost, async (req, res) => {
-    try {
-      await res.post.remove();
-      res.json({ message: 'Post deleted' });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  });
-
-// Like a Post
-app.post('/posts/:id/like', getPost, async (req, res) => {
-  res.post.likes++;
-  try {
-    const updatedPost = await res.post.save();
-    res.json(updatedPost);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
 
 // Add a Comment to a Post
 app.post('/posts/:id/comment', getPost, async (req, res) => {
-  res.post.comments.push(req.body.comment);
-  try {
-    const updatedPost = await res.post.save();
-    res.json(updatedPost);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+    const { comment } = req.body;
+    if (!comment) {
+        return res.status(400).json({ message: 'Comment content is required' });
+    }
+    try {
+        res.post.comments.push(comment);
+        const updatedPost = await res.post.save();
+        res.json(updatedPost);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
 });
+
 
 async function getPost(req, res, next) {
   let post;
