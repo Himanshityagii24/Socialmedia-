@@ -101,7 +101,7 @@ app.put('/posts/:id', getPost, async (req, res) => {
 
 // Update the route to delete the photo by post id
 
-  app.delete('/posts/photo/:id', async (req, res) => {
+  app.delete('/posts/:id/photo', async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
         if (!post) {
@@ -115,11 +115,6 @@ app.put('/posts/:id', getPost, async (req, res) => {
     }
 });
 
-  
-  // Update the existing delete route for posts to delete the entire post
-  
-
-// Like a Post
 // Like a Post
 app.post('/posts/:id/like', getPost, async (req, res) => {
     res.post.likes++;
@@ -130,22 +125,23 @@ app.post('/posts/:id/like', getPost, async (req, res) => {
       res.status(400).json({ message: err.message });
     }
   });
-  
 
-// Add a Comment to a Post
+
+// Comment to a Post
 app.post('/posts/:id/comment', getPost, async (req, res) => {
-    const { comment } = req.body;
+    const { comment } = req.body; // Extracting comment data from the request body
     if (!comment) {
         return res.status(400).json({ message: 'Comment content is required' });
     }
     try {
-        res.post.comments.push(comment);
-        const updatedPost = await res.post.save();
-        res.json(updatedPost);
+        res.post.comments.push(comment); // Add the comment to the post's comments array
+        const updatedPost = await res.post.save(); // Save the updated post
+        res.json(updatedPost); // Sending back the updated post 
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
 });
+
 
 
 async function getPost(req, res, next) {
@@ -161,8 +157,21 @@ async function getPost(req, res, next) {
   res.post = post;
   next();
 }
+app.delete('/posts/:id', async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        // Remove the post from the database
+        await post.remove();
+        res.json({ message: 'Post deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`); 
 });

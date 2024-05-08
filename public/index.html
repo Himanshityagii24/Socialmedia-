@@ -257,7 +257,7 @@
     border: 1px solid #ccc;
     padding: 5px;
     width: 1000px;
-	height:1000px;
+	height:800px;
     text-align: center;
   }
   .uploadedImage img {
@@ -277,6 +277,39 @@
     color: #fff;
     cursor: pointer;
   }
+  .commentButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.commentButton:hover {
+    background-color: #0056b3;
+}
+
+.deleteButton {
+    background-color: transparent;
+    border: none;
+    color: #dc3545;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.deleteButton:hover {
+    color: #bd2130;
+}
+
+.buttonContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
 </style>
 </head>
 <body>
@@ -344,7 +377,7 @@
 					<div class="status">
 						<div class="image">
 							<img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220604085434/GeeksForGeeks-300x243.png"
+"https://media.geeksforgeeks.org/wp-content/uploads/20220609093229/g-200x200.png"
 								alt="img3">
 						</div>
 					</div>
@@ -379,12 +412,12 @@
 					<div class="status">
 						<div class="image">
 							<img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220604085434/GeeksForGeeks-300x243.png"
+"https://media.geeksforgeeks.org/wp-content/uploads/20220609093229/g-200x200.png"
 								alt="img8">
 						</div>
 					</div>
 				</div>
-<!-- Container for uploaded photos -->
+<!-- Container for uploaded phcotos -->
 <div id="imageContainer"></div>
 
 <!-- Upload button and input -->
@@ -427,24 +460,29 @@
             commentSection.className = 'commentSection';
             commentSection.innerHTML = `
                 <textarea id="commentInput-${post._id}" placeholder="Add a comment"></textarea>
-                <button onclick="addComment('${post._id}')">Add Comment</button>
+                <button class="commentButton" onclick="addComment('${post._id}')">Add Comment</button>
             `;
 
             const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
+            deleteButton.innerHTML = '<i class="fas fa-trash"></i>'; // Trash icon
             deleteButton.className = 'deleteButton';
             deleteButton.addEventListener('click', () => deletePhoto(post._id)); // Attach click event
 
+            // Container for like, comment, and delete buttons
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'buttonContainer';
+            buttonContainer.appendChild(likeButton);
+            buttonContainer.appendChild(commentSection);
+            buttonContainer.appendChild(deleteButton);
+
             imageElement.appendChild(img);
-            imageElement.appendChild(likeButton);
-            imageElement.appendChild(commentSection);
-            imageElement.appendChild(deleteButton);
+            imageElement.appendChild(buttonContainer);
             imageContainer.appendChild(imageElement);
         });
     } catch (error) {
         console.error('Error fetching photos:', error);
     }
-}
+} 
 
 
   // Function to upload photo
@@ -475,7 +513,7 @@
   // Modify the deletePhoto function to send a request to delete the image
   async function deletePhotoContainer(postId) {
             try {
-                const response = await fetch(`/posts/photo/${postId}`, {
+                const response = await fetch(`/posts/${postId}/photo`, {
                     method: 'DELETE',
                 });
                 if (response.ok) {
@@ -489,6 +527,23 @@
                 console.error('Error deleting image container:', error);
             }
         }
+		//Function to delete a post
+async function deletePhoto(postId) {
+    try {
+        const response = await fetch(`/posts/${postId}`, {
+            method: 'DELETE',
+        });
+        if (response.ok) {
+            console.log('Post deleted successfully');
+            fetchAndDisplayPhotos(); // Refresh photos after deleting
+        } else {
+            console.error('Failed to delete post:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error deleting post:', error);
+    }
+}
+
 
 		// Update likePost function to send a request to like the post
 // Update likePost function to send a request to like the post
@@ -514,6 +569,8 @@ async function likePost(postId) {
 }
 
 // Function to add a comment to a post
+// Function to add a comment to a post
+// Function to add a comment to a post
 async function addComment(postId) {
     const commentInput = document.getElementById(`commentInput-${postId}`).value;
     if (!commentInput) return;
@@ -524,7 +581,7 @@ async function addComment(postId) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ comment: commentInput }),
+            body: JSON.stringify({ comment: commentInput }), // Send the comment data in JSON format
         });
         if (response.ok) {
             console.log('Comment added successfully');
@@ -536,6 +593,7 @@ async function addComment(postId) {
         console.error('Error adding comment:', error);
     }
 }
+
 
 
  
